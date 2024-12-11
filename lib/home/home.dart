@@ -29,7 +29,7 @@ class HomePage extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  "Come on, change\nyour activities to\nbetter sports",
+                  "Come on, change\nyour activities to\nbetter sports ddd",
                   style: kfBlack30Medium,
                   softWrap: true,
                   maxLines: 3,
