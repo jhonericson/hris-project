@@ -51,7 +51,7 @@ class _SplashPageState extends State<SplashPage> {
         ),
         child: Center(
           child: Text(
-            "Better Me",
+            "HRIS SKRIPSI",
             style: kfBlack40Bold,
           ),
         ),
