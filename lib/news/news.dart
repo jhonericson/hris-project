@@ -15,7 +15,7 @@ class NewsPage extends StatelessWidget {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           title: Text(
-            "Berita Kesehatan",
+            "Cuti",
             style: kfBlack16Medium,
           ),
         ),

@@ -55,7 +55,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
               color: Colors.black,
               size: 25,
             ),
-            label: "Berita",
+            label: "Cuti",
           ),
           BottomNavigationBarItem(
             icon: Icon(
