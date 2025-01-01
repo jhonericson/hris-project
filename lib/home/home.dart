@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:healty_apps/activity/activity.dart';
+import 'package:healty_apps/attendance/attendance_list_page.dart';
 import 'package:healty_apps/constant/asset_const.dart';
 import 'package:healty_apps/constant/font_const.dart';
 import 'package:healty_apps/constant/spacer_const.dart';
@@ -131,7 +132,14 @@ class HomePage extends StatelessWidget {
                         height: 25,
                         borderRadius: BorderRadius.circular(10),
                         width: size.width * 0.3,
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const AttendanceListPage(),
+                            ),
+                          );
+                        },
                         child: Text(
                           "Hadir",
                           style: kfWhite14Medium,
