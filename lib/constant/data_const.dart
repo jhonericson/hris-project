@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:healty_apps/constant/asset_const.dart';
+import 'package:hris_skripsi/constant/asset_const.dart';
 
 List<HomeMenu> homeMenus = [
   const HomeMenu(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:healty_apps/constant/data_const.dart';
-import 'package:healty_apps/constant/spacer_const.dart';
-import 'package:healty_apps/widgets/shadow.dart';
+import 'package:hris_skripsi/constant/data_const.dart';
+import 'package:hris_skripsi/constant/spacer_const.dart';
+import 'package:hris_skripsi/widgets/shadow.dart';
 
 class FoodsPage extends StatefulWidget {
   const FoodsPage({super.key});

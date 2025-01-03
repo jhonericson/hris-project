@@ -1,4 +1,4 @@
-# healty_apps
+# hris_skripsi
 
 A new Flutter project.
 

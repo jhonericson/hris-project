@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:healty_apps/constant/data_const.dart';
-import 'package:healty_apps/constant/font_const.dart';
-import 'package:healty_apps/constant/spacer_const.dart';
+import 'package:hris_skripsi/constant/data_const.dart';
+import 'package:hris_skripsi/constant/font_const.dart';
+import 'package:hris_skripsi/constant/spacer_const.dart';
 
 class NewsDetailPage extends StatelessWidget {
   const NewsDetailPage({super.key, required this.news});

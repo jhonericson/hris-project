@@ -18,7 +18,7 @@
 		<string>This application requires access to the camera application to make personnel
 			submissions?</string>
 		<key>CFBundleName</key>
-		<string>healty_apps</string>
+		<string>hris_skripsi</string>
 		<key>CFBundlePackageType</key>
 		<string>APPL</string>
 		<key>CFBundleShortVersionString</key>

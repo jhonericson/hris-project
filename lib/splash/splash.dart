@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:healty_apps/constant/font_const.dart';
-import 'package:healty_apps/login/login.dart';
+import 'package:hris_skripsi/constant/font_const.dart';
+import 'package:hris_skripsi/login/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constant/asset_const.dart';

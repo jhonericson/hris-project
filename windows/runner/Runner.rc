@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "healty_apps" "\0"
+            VALUE "FileDescription", "hris_skripsi" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "healty_apps" "\0"
+            VALUE "InternalName", "hris_skripsi" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2024 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "healty_apps.exe" "\0"
-            VALUE "ProductName", "healty_apps" "\0"
+            VALUE "OriginalFilename", "hris_skripsi.exe" "\0"
+            VALUE "ProductName", "hris_skripsi" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

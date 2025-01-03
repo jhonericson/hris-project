@@ -1,14 +1,14 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:healty_apps/constant/font_const.dart';
-import 'package:healty_apps/widgets/shadow.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hris_skripsi/constant/font_const.dart';
+import 'package:hris_skripsi/widgets/shadow.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart' as lokasi;
-
+import '../home/navigation.dart';
 import '../widgets/button.dart';
 
 class AttendanceRequestPage extends StatefulWidget {
@@ -58,6 +58,22 @@ class _AttendanceRequestPageState extends State<AttendanceRequestPage> {
         maxWidth: 720,
         requestFullMetadata: true);
     image = File(imagePicked!.path);
+    if (image != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const BottomNavigation(),
+        ),
+      );
+      Fluttertoast.showToast(
+          msg: "Success",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
   }
 
   void initLocationService() async {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:healty_apps/splash/splash.dart';
+import 'package:hris_skripsi/splash/splash.dart';
 
 void main() {
   runApp(const MyApp());
@@ -7,7 +7,8 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-/// hehe pak buk
+
+  /// hehe pak buk
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {

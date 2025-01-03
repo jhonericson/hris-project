@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:healty_apps/account/account.dart';
-import 'package:healty_apps/constant/font_const.dart';
-import 'package:healty_apps/home/home.dart';
-import 'package:healty_apps/news/news.dart';
+import 'package:hris_skripsi/account/account.dart';
+import 'package:hris_skripsi/constant/font_const.dart';
+import 'package:hris_skripsi/home/home.dart';
+import 'package:hris_skripsi/news/news.dart';
 
 class BottomNavigation extends StatefulWidget {
   const BottomNavigation({super.key});

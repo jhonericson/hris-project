@@ -1,9 +1,9 @@
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:healty_apps/constant/font_const.dart';
-import 'package:healty_apps/constant/spacer_const.dart';
-import 'package:healty_apps/login/login.dart';
-import 'package:healty_apps/widgets/shadow.dart';
+import 'package:hris_skripsi/constant/font_const.dart';
+import 'package:hris_skripsi/constant/spacer_const.dart';
+import 'package:hris_skripsi/login/login.dart';
+import 'package:hris_skripsi/widgets/shadow.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../constant/asset_const.dart';
 import '../widgets/button.dart';

@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:healty_apps/constant/asset_const.dart';
-import 'package:healty_apps/constant/font_const.dart';
-import 'package:healty_apps/constant/spacer_const.dart';
-import 'package:healty_apps/widgets/button.dart';
+import 'package:hris_skripsi/constant/asset_const.dart';
+import 'package:hris_skripsi/constant/font_const.dart';
+import 'package:hris_skripsi/constant/spacer_const.dart';
+import 'package:hris_skripsi/widgets/button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../home/navigation.dart';

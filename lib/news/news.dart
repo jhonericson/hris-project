@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:healty_apps/news/news_detail.dart';
+import 'package:hris_skripsi/news/news_detail.dart';
 import '../../../../constant/data_const.dart';
 import '../../../../constant/font_const.dart';
 import '../../../../widgets/shadow.dart';

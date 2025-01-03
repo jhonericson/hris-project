@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:healty_apps/activity/activity.dart';
-import 'package:healty_apps/attendance/attendance_list_page.dart';
-import 'package:healty_apps/constant/asset_const.dart';
-import 'package:healty_apps/constant/font_const.dart';
-import 'package:healty_apps/constant/spacer_const.dart';
+import 'package:hris_skripsi/activity/activity.dart';
+import 'package:hris_skripsi/attendance/attendance_list_page.dart';
+import 'package:hris_skripsi/constant/asset_const.dart';
+import 'package:hris_skripsi/constant/font_const.dart';
+import 'package:hris_skripsi/constant/spacer_const.dart';
 
-import 'package:healty_apps/widgets/shadow.dart';
+import 'package:hris_skripsi/widgets/shadow.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../constant/data_const.dart';
 import '../widgets/button.dart';
