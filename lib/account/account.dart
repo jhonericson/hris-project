@@ -84,8 +84,15 @@ class AccountButtonWidget extends StatelessWidget {
         const AccountButton(
           label: "Panduan Pengguna",
         ),
-        const AccountButton(
-          label: "Ganti Kata Sandi",
+        AccountButton(
+          label: "Generate Gaji",
+          onTap: () {
+            showOkAlertDialog(
+              context: context,
+              title: "Generate Gaji",
+              message: "Slip gaji belum tersedia",
+            );
+          },
         ),
         Padding(
           padding: const EdgeInsets.all(20),
@@ -126,8 +133,10 @@ class AccountButton extends StatelessWidget {
   const AccountButton({
     super.key,
     required this.label,
+    this.onTap,
   });
   final String label;
+  final Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +145,7 @@ class AccountButton extends StatelessWidget {
       child: Column(
         children: [
           InkWell(
-            onTap: () {},
+            onTap: onTap,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

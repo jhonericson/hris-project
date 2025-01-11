@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hris_skripsi/account/account.dart';
 import 'package:hris_skripsi/constant/font_const.dart';
 import 'package:hris_skripsi/home/home.dart';
-import 'package:hris_skripsi/news/news.dart';
+import 'package:hris_skripsi/leave/leave_list_page.dart';
 
 class BottomNavigation extends StatefulWidget {
   const BottomNavigation({super.key});
@@ -15,7 +15,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
   int _selectedTab = 0;
   final List _pages = [
     const HomePage(),
-    const NewsPage(),
+    const LeaveListPage(),
     const AccountPage(),
   ];
 
@@ -28,6 +28,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       body: _pages[_selectedTab],
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[

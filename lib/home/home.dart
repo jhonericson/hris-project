@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hris_skripsi/activity/activity.dart';
+// import 'package:hris_skripsi/activity/activity.dart';
 import 'package:hris_skripsi/attendance/attendance_list_page.dart';
 import 'package:hris_skripsi/constant/asset_const.dart';
 import 'package:hris_skripsi/constant/font_const.dart';
@@ -7,7 +7,7 @@ import 'package:hris_skripsi/constant/spacer_const.dart';
 
 import 'package:hris_skripsi/widgets/shadow.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../constant/data_const.dart';
+// import '../constant/data_const.dart';
 import '../widgets/button.dart';
 
 class HomePage extends StatelessWidget {
@@ -181,7 +181,7 @@ class HomePage extends StatelessWidget {
                             ),
                             ksVertical10,
                             Text(
-                              "20 Hari",
+                              "3 Hari",
                               style: kfBlack16Regular,
                             ),
                             ksVertical10,
@@ -211,14 +211,14 @@ class HomePage extends StatelessWidget {
                             Row(
                               children: [
                                 Text(
-                                  "Total Hari Kerja",
+                                  "Total Cuti",
                                   style: kfBlack16Medium,
                                 ),
                               ],
                             ),
                             ksVertical10,
                             Text(
-                              "20 Hari",
+                              "5 Hari",
                               style: kfBlack16Regular,
                             ),
                             ksVertical10,
@@ -231,69 +231,69 @@ class HomePage extends StatelessWidget {
               ],
             ),
             ksVertical10,
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                "Rekomendasi Olahragas",
-                style: kfBlack16Bold,
-              ),
-            ),
-            ListView.separated(
-              physics: const ClampingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              shrinkWrap: true,
-              itemCount: homeMenus.length,
-              separatorBuilder: (BuildContext context, int index) {
-                return ksVertical15;
-              },
-              itemBuilder: (BuildContext context, int index) {
-                final menu = homeMenus[index];
-                return InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ActivityPage(
-                          data: menu,
-                        ),
-                      ),
-                    );
-                  },
-                  child: PerfectShadow(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                      ),
-                      padding: const EdgeInsets.all(15),
-                      child: Row(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(7.5),
-                            child: SizedBox(
-                              height: size.width * 0.3,
-                              width: size.width * 0.2,
-                              child: Image.asset(
-                                menu.image,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                          ksHorizontal20,
-                          Text(
-                            menu.title,
-                            style: kfBlack24Medium,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 20),
+            //   child: Text(
+            //     "Rekomendasi Olahragas",
+            //     style: kfBlack16Bold,
+            //   ),
+            // ),
+            // ListView.separated(
+            //   physics: const ClampingScrollPhysics(),
+            //   padding: const EdgeInsets.symmetric(vertical: 20),
+            //   shrinkWrap: true,
+            //   itemCount: homeMenus.length,
+            //   separatorBuilder: (BuildContext context, int index) {
+            //     return ksVertical15;
+            //   },
+            //   itemBuilder: (BuildContext context, int index) {
+            //     final menu = homeMenus[index];
+            //     return InkWell(
+            //       onTap: () {
+            //         Navigator.push(
+            //           context,
+            //           MaterialPageRoute(
+            //             builder: (context) => ActivityPage(
+            //               data: menu,
+            //             ),
+            //           ),
+            //         );
+            //       },
+            //       child: PerfectShadow(
+            //         child: Container(
+            //           decoration: BoxDecoration(
+            //             color: Colors.white,
+            //             borderRadius: BorderRadius.circular(15),
+            //           ),
+            //           margin: const EdgeInsets.symmetric(
+            //             horizontal: 20,
+            //           ),
+            //           padding: const EdgeInsets.all(15),
+            //           child: Row(
+            //             children: [
+            //               ClipRRect(
+            //                 borderRadius: BorderRadius.circular(7.5),
+            //                 child: SizedBox(
+            //                   height: size.width * 0.3,
+            //                   width: size.width * 0.2,
+            //                   child: Image.asset(
+            //                     menu.image,
+            //                     fit: BoxFit.cover,
+            //                   ),
+            //                 ),
+            //               ),
+            //               ksHorizontal20,
+            //               Text(
+            //                 menu.title,
+            //                 style: kfBlack24Medium,
+            //               ),
+            //             ],
+            //           ),
+            //         ),
+            //       ),
+            //     );
+            //   },
+            // ),
           ],
         ),
       ),
