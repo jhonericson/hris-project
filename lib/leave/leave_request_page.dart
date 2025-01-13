@@ -1,14 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hris_skripsi/constant/spacer_const.dart';
 
 import '../constant/font_const.dart';
+import '../home/navigation.dart';
 import '../widgets/button.dart';
 
-class LeaveRequestPage extends StatelessWidget {
-  final List<String> cutiOptions = ['Sakit', 'Cuti Tahunan', 'Cuti Melahirkan'];
-  final TextEditingController dateController = TextEditingController();
+class LeaveRequestPage extends StatefulWidget {
+  const LeaveRequestPage({super.key});
 
-  LeaveRequestPage({super.key});
+  @override
+  State<LeaveRequestPage> createState() => _LeaveRequestPageState();
+}
+
+class _LeaveRequestPageState extends State<LeaveRequestPage> {
+  final List<String> cutiOptions = ['Sakit', 'Cuti Tahunan', 'Cuti Melahirkan'];
+  String? cuti;
+  final TextEditingController dateController = TextEditingController();
+  final TextEditingController noteController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +43,7 @@ class LeaveRequestPage extends StatelessWidget {
                 );
               }).toList(),
               onChanged: (value) {
-                // Logika ketika jenis cuti dipilih
+                cuti = value;
               },
             ),
             const SizedBox(height: 16.0),
@@ -64,6 +73,7 @@ class LeaveRequestPage extends StatelessWidget {
             ),
             ksVertical15,
             TextFormField(
+              controller: noteController,
               onTapOutside: (event) {
                 FocusScope.of(context).unfocus();
               },
@@ -123,7 +133,29 @@ class LeaveRequestPage extends StatelessWidget {
           height: kToolbarHeight,
           borderRadius: BorderRadius.circular(10),
           width: double.infinity,
-          onPressed: () {},
+          onPressed: () {
+            if (cuti == null &&
+                dateController.text.isEmpty &&
+                noteController.text.isEmpty) {
+              Fluttertoast.showToast(msg: 'Lengkapi data terlebih dahulu');
+              return;
+            } else {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const BottomNavigation(),
+                ),
+              );
+              Fluttertoast.showToast(
+                  msg: "Success",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.CENTER,
+                  timeInSecForIosWeb: 1,
+                  backgroundColor: Colors.black,
+                  textColor: Colors.white,
+                  fontSize: 16.0);
+            }
+          },
           child: Text(
             "Ajukan Cuti",
             style: kfWhite14Medium,
