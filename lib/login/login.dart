@@ -236,14 +236,35 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             );
                           } else {
-                            _saveUser(email: emailC.text);
+                            if (emailC.text == "jhonericson90@gmail.com" &&
+                                passwordC.text == "123456") {
+                              _saveUser(email: emailC.text);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const BottomNavigation(),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  backgroundColor: Colors.white,
+                                  content: Text(
+                                    "Login Error\nPeriksa Kembali Email dan Password",
+                                    style: kfBlack14Regular,
+                                  ),
+                                ),
+                              );
+                            }
+                            // _saveUser(email: emailC.text);
 
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const BottomNavigation(),
-                              ),
-                            );
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (context) => const BottomNavigation(),
+                            //   ),
+                            // );
                           }
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
