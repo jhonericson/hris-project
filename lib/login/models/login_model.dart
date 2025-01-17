@@ -25,11 +25,13 @@ class Result {
   final bool? isAtasan;
   final bool? isHr;
   final String? nik;
+  final String? name;
 
   Result({
     this.isAtasan,
     this.isHr,
     this.nik,
+    this.name,
   });
 
   factory Result.fromRawJson(String str) => Result.fromJson(json.decode(str));
@@ -40,11 +42,13 @@ class Result {
         isAtasan: json["isAtasan"],
         isHr: json["isHr"],
         nik: json["nik"],
+        name: json["name"],
       );
 
   Map<String, dynamic> toJson() => {
         "isAtasan": isAtasan,
         "isHr": isHr,
         "nik": nik,
+        "name": name,
       };
 }

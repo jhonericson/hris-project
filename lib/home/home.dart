@@ -1,25 +1,35 @@
 import 'package:flutter/material.dart';
-// import 'package:hris_skripsi/activity/activity.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hris_skripsi/attendance/attendance_list_page.dart';
 import 'package:hris_skripsi/attendance/attendance_request_page.dart';
 import 'package:hris_skripsi/constant/asset_const.dart';
 import 'package:hris_skripsi/constant/font_const.dart';
 import 'package:hris_skripsi/constant/spacer_const.dart';
-
 import 'package:hris_skripsi/widgets/shadow.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-// import '../constant/data_const.dart';
+import '../login/controller/login_bloc.dart';
 import '../widgets/button.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => LoginBloc()..add(const GetLoginData()),
+      child: const HomePageView(),
+    );
+  }
 }
 
-class _HomePageState extends State<HomePage> {
+class HomePageView extends StatefulWidget {
+  const HomePageView({super.key});
+
+  @override
+  State<HomePageView> createState() => _HomePageViewState();
+}
+
+class _HomePageViewState extends State<HomePageView> {
   @override
   void initState() {
     requestPermission();
@@ -36,32 +46,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    Future<String?> getUsername() async {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      return prefs.getString('betterme');
-    }
-
-    String getEmailName(String email) {
-      List<String> parts = email.split('@');
-      String name = parts[0];
-      List<String> nameParts = name.split('.');
-      nameParts = nameParts
-          .map((part) => part[0].toUpperCase() + part.substring(1))
-          .toList();
-      return nameParts.join(' ');
-    }
-
     return Scaffold(
-      // appBar: AppBar(
-      //   backgroundColor: Colors.red,
-      //   elevation: 0,
-      //   actions: [
-      //     IconButton(
-      //       icon: const Icon(Icons.notifications_none),
-      //       onPressed: () {},
-      //     ),
-      //   ],
-      // ),
       body: SingleChildScrollView(
         physics: const ClampingScrollPhysics(),
         child: Column(
@@ -83,19 +68,21 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   ksHorizontal20,
-                  FutureBuilder<String?>(
-                    future: getUsername(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
+                  BlocBuilder<LoginBloc, LoginState>(
+                    builder: (context, state) {
+                      if (state is LoginSuccess) {
                         return Text(
-                          getEmailName("${snapshot.data}"),
+                          "Hai, ${state.loginModel.result?.name ?? ""}",
                           style: kfBlack18Medium,
                         );
                       } else {
-                        return const Text('No data available');
+                        return Text(
+                          "Hai, ........",
+                          style: kfBlack18Medium,
+                        );
                       }
                     },
-                  )
+                  ),
                 ],
               ),
             ),

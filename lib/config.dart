@@ -1,4 +1,4 @@
-const String api = '192.168.1.29';
+const String api = 'https://hris-eta.vercel.app';
 
 /// IP Address of the API
-const String apiUrl = 'http://$api:5000';
+const String apiUrl = api;

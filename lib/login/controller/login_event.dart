@@ -27,3 +27,11 @@ class SaveLoginSession extends LoginEvent {
   @override
   List<Object> get props => [loginModel];
 }
+
+class GetLoginData extends LoginEvent {
+  const GetLoginData();
+}
+
+class Logout extends LoginEvent {
+  const Logout();
+}

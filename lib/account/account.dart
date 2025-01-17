@@ -1,11 +1,13 @@
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hris_skripsi/constant/font_const.dart';
 import 'package:hris_skripsi/constant/spacer_const.dart';
 import 'package:hris_skripsi/login/login.dart';
 import 'package:hris_skripsi/widgets/shadow.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../constant/asset_const.dart';
+import '../login/controller/login_bloc.dart';
 import '../widgets/button.dart';
 
 class AccountPage extends StatefulWidget {
@@ -16,11 +18,6 @@ class AccountPage extends StatefulWidget {
 }
 
 class _AccountPageState extends State<AccountPage> {
-  Future<String?> getUsername() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('betterme');
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,15 +32,18 @@ class _AccountPageState extends State<AccountPage> {
         physics: const ClampingScrollPhysics(),
         child: Column(
           children: [
-            FutureBuilder<String?>(
-              future: getUsername(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return AccountDataCard(
-                    email: "${snapshot.data}",
+            BlocBuilder<LoginBloc, LoginState>(
+              builder: (context, state) {
+                if (state is LoginSuccess) {
+                  return Text(
+                    "Hai, ${state.loginModel.result?.name ?? ""}",
+                    style: kfBlack18Medium,
                   );
                 } else {
-                  return const Text('No data available');
+                  return Text(
+                    "Hai, ........",
+                    style: kfBlack18Medium,
+                  );
                 }
               },
             ),
@@ -107,7 +107,7 @@ class AccountButtonWidget extends StatelessWidget {
                       message: "Anda Yakin Ingin Keluar ?")
                   .then((value) {
                 if (value.name == "ok") {
-                  deleteUser();
+                  context.read<LoginBloc>().add(const Logout());
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(

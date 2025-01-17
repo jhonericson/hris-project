@@ -1,4 +1,6 @@
+import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:hris_skripsi/leave/leave_detail_page.dart';
 import 'package:hris_skripsi/leave/leave_request_page.dart';
 
 class LeaveListPage extends StatelessWidget {
@@ -34,7 +36,7 @@ class LeaveListPage extends StatelessWidget {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const LeaveRequestPage()));
+                            builder: (context) => LeaveDetailPage()));
                   },
                 );
               },
@@ -47,12 +49,48 @@ class LeaveListPage extends StatelessWidget {
                   title:
                       index % 2 == 0 ? const Text('Cuti') : const Text('Sakit'),
                   subtitle: Text('$index/12/2024'),
-                  trailing: const Icon(Icons.arrow_forward_ios),
+                  trailing: Wrap(
+                    // mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.check),
+                        onPressed: () {
+                          showOkCancelAlertDialog(
+                            context: context,
+                            title: 'Approve',
+                            message: 'Are you sure to approve this request?',
+                          ).then(
+                            (value) {
+                              if (value == OkCancelResult.ok) {
+                                // do something
+                              }
+                            },
+                          );
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () {
+                          showOkCancelAlertDialog(
+                            context: context,
+                            title: 'Reject',
+                            message: 'Are you sure to reject this request?',
+                          ).then(
+                            (value) {
+                              if (value == OkCancelResult.ok) {
+                                // do something
+                              }
+                            },
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                   onTap: () {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const LeaveRequestPage()));
+                            builder: (context) => LeaveDetailPage()));
                   },
                 );
               },
@@ -61,8 +99,10 @@ class LeaveListPage extends StatelessWidget {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const LeaveRequestPage()));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const LeaveRequestPage()));
           },
           child: const Icon(Icons.add),
         ),

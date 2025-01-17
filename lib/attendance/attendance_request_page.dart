@@ -50,7 +50,7 @@ class _AttendanceRequestPageState extends State<AttendanceRequestPage> {
     super.dispose();
   }
 
-  Future<void> getImage(ImageSource source) async {
+  Future<void> getImage(ImageSource source, String note) async {
     final ImagePicker picker = ImagePicker();
     final XFile? imagePicked = await picker.pickImage(
         source: source,
@@ -217,6 +217,7 @@ class _AttendanceRequestPageState extends State<AttendanceRequestPage> {
           Padding(
             padding: const EdgeInsets.all(10.0),
             child: TextFormField(
+              controller: _description,
               onTapOutside: (event) {
                 FocusScope.of(context).unfocus();
               },
@@ -229,7 +230,7 @@ class _AttendanceRequestPageState extends State<AttendanceRequestPage> {
               // },
               validator: (value) {
                 if (value!.isEmpty) {
-                  return "Email Kosong";
+                  return "catatan Kosong";
                 }
                 return null;
               },
@@ -275,7 +276,8 @@ class _AttendanceRequestPageState extends State<AttendanceRequestPage> {
           borderRadius: BorderRadius.circular(10),
           width: double.infinity,
           onPressed: () {
-            getImage(ImageSource.camera);
+            print(_description.text);
+            // getImage(ImageSource.camera, _description.text);
           },
           child: Text(
             "Ambil Gambar",

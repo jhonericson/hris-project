@@ -1,8 +1,11 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hris_skripsi/constant/asset_const.dart';
 import 'package:hris_skripsi/constant/font_const.dart';
 import 'package:hris_skripsi/constant/spacer_const.dart';
+import 'package:hris_skripsi/login/controller/login_bloc.dart';
 import 'package:hris_skripsi/widgets/button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -110,13 +113,13 @@ class _LoginPageState extends State<LoginPage> {
                             Radius.circular(10.0),
                           ),
                         ),
-                        labelText: "Email",
-                        hintText: "Input Email",
+                        labelText: "Username",
+                        hintText: "Input Username",
                         labelStyle:
                             kfBlack14Regular.copyWith(color: Colors.grey),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         prefixIcon: const Icon(
-                          Icons.email,
+                          Icons.person,
                           color: Colors.black,
                         ),
                       ),
@@ -217,15 +220,90 @@ class _LoginPageState extends State<LoginPage> {
                       ],
                     ),
                     ksVertical20,
-                    ButtonGradient(
-                      height: kToolbarHeight,
-                      borderRadius: BorderRadius.circular(10),
-                      width: double.infinity,
-                      onPressed: () async {
-                        if (_formKey.currentState?.validate() ?? false) {
-                          _formKey.currentState!.save();
+                    BlocListener<LoginBloc, LoginState>(
+                      listener: (context, state) {
+                        if (state is LoginLoading) {
+                          EasyLoading.show(
+                            status: "Please Wait...",
+                            dismissOnTap: true,
+                          );
+                        } else if (state is LoginSuccess) {
+                          EasyLoading.showSuccess("success");
+                          EasyLoading.dismiss();
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const BottomNavigation()));
+                        } else if (state is LoginFailure) {
+                          EasyLoading.dismiss();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              backgroundColor: Colors.white,
+                              content: Text(
+                                "Login Error\nPeriksa Kembali Email dan Password",
+                                style: kfBlack14Regular,
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      child: ButtonGradient(
+                        height: kToolbarHeight,
+                        borderRadius: BorderRadius.circular(10),
+                        width: double.infinity,
+                        onPressed: () async {
+                          if (_formKey.currentState?.validate() ?? false) {
+                            _formKey.currentState!.save();
 
-                          if (emailC.text.isEmpty || passwordC.text.isEmpty) {
+                            if (emailC.text.isEmpty || passwordC.text.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  backgroundColor: Colors.white,
+                                  content: Text(
+                                    "Login Error",
+                                    style: kfBlack14Regular,
+                                  ),
+                                ),
+                              );
+                            } else {
+                              context.read<LoginBloc>().add(
+                                    LoginButtonPressed(
+                                      username: emailC.text,
+                                      password: passwordC.text,
+                                    ),
+                                  );
+                              // if (emailC.text == "jhonericson90@gmail.com" &&
+                              //     passwordC.text == "123456") {
+                              //   _saveUser(email: emailC.text);
+                              //   Navigator.push(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //       builder: (context) =>
+                              //           const BottomNavigation(),
+                              //     ),
+                              //   );
+                              // } else {
+                              //   ScaffoldMessenger.of(context).showSnackBar(
+                              //     SnackBar(
+                              //       backgroundColor: Colors.white,
+                              //       content: Text(
+                              //         "Login Error\nPeriksa Kembali Email dan Password",
+                              //         style: kfBlack14Regular,
+                              //       ),
+                              //     ),
+                              //   );
+                              // }
+                              // _saveUser(email: emailC.text);
+
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) => const BottomNavigation(),
+                              //   ),
+                              // );
+                            }
+                          } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 backgroundColor: Colors.white,
@@ -235,52 +313,12 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               ),
                             );
-                          } else {
-                            if (emailC.text == "jhonericson90@gmail.com" &&
-                                passwordC.text == "123456") {
-                              _saveUser(email: emailC.text);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const BottomNavigation(),
-                                ),
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  backgroundColor: Colors.white,
-                                  content: Text(
-                                    "Login Error\nPeriksa Kembali Email dan Password",
-                                    style: kfBlack14Regular,
-                                  ),
-                                ),
-                              );
-                            }
-                            // _saveUser(email: emailC.text);
-
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (context) => const BottomNavigation(),
-                            //   ),
-                            // );
                           }
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              backgroundColor: Colors.white,
-                              content: Text(
-                                "Login Error",
-                                style: kfBlack14Regular,
-                              ),
-                            ),
-                          );
-                        }
-                      },
-                      child: Text(
-                        "Login",
-                        style: kfWhite14Medium,
+                        },
+                        child: Text(
+                          "Login",
+                          style: kfWhite14Medium,
+                        ),
                       ),
                     ),
                     ksVertical30,

@@ -13,6 +13,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginBloc() : super(LoginInitial()) {
     on<LoginButtonPressed>(_onLoginButtonPressed);
     on<SaveLoginSession>(_onSaveLoginSession);
+    on<GetLoginData>(_onGetLoginData);
+    on<Logout>(_onLogout);
   }
   Future<void> _onLoginButtonPressed(
     LoginButtonPressed event,
@@ -22,15 +24,15 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     try {
       print("mulai");
       final response = await http.post(
-        Uri.parse('$apiUrl/login'),
+        Uri.parse('$apiUrl/hris/v1/employee/login'),
         body: LoginBody(
           username: event.username,
           password: event.password,
-        ).toRawJson(),
+        ).toJson(),
       );
       print("selesai");
       final Map<String, dynamic> data = jsonDecode(response.body);
-      print(response.statusCode);
+      print("${response.statusCode},${response.body}");
       if (response.statusCode == 200) {
         emit(
           LoginSuccess(
@@ -52,5 +54,32 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   ) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString("login", jsonEncode(event.loginModel));
+  }
+
+  void _onGetLoginData(
+    GetLoginData event,
+    Emitter<LoginState> emit,
+  ) async {
+    emit(LoginLoading());
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final data = prefs.getString("login");
+    if (data != null) {
+      emit(
+        LoginSuccess(
+          loginModel: LoginModel.fromJson(jsonDecode(data)),
+        ),
+      );
+    } else {
+      emit(LoginFailure());
+    }
+  }
+
+  void _onLogout(
+    Logout event,
+    Emitter<LoginState> emit,
+  ) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove("login");
+    emit(LoginInitial());
   }
 }

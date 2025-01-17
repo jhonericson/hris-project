@@ -1,27 +1,24 @@
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hris_skripsi/attendance/attendance_detail_page.dart';
 
-class AttendanceListPage extends StatefulWidget {
+import 'controller/attendance_bloc.dart';
+
+class AttendanceListPage extends StatelessWidget {
   const AttendanceListPage({super.key});
 
   @override
-  State<AttendanceListPage> createState() => _AttendanceListPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => AttendanceBloc()..add(LoadAttendance()),
+      child: const AttendanceListPageView(),
+    );
+  }
 }
 
-class _AttendanceListPageState extends State<AttendanceListPage> {
-  @override
-  void initState() {
-    requestPermission();
-    super.initState();
-  }
-
-  void requestPermission() async {
-    await [
-      Permission.location,
-      Permission.camera,
-    ].request();
-  }
+class AttendanceListPageView extends StatelessWidget {
+  const AttendanceListPageView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -39,16 +36,38 @@ class _AttendanceListPageState extends State<AttendanceListPage> {
         body: TabBarView(
           physics: const NeverScrollableScrollPhysics(),
           children: [
-            ListView.builder(
-              physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: 10,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: const Text('Absen Masuk'),
-                  subtitle: Text('$index/12/2024'),
-                  trailing: const Icon(Icons.arrow_forward_ios),
-                  onTap: () {},
-                );
+            BlocBuilder<AttendanceBloc, AttendanceState>(
+              builder: (context, state) {
+                if (state is AttendanceSuccess) {
+                  final datas = state.attendanceListModel.result;
+                  if (state.attendanceListModel.result!.isNotEmpty) {
+                    return ListView.builder(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      itemCount: datas!.length,
+                      itemBuilder: (context, index) {
+                        final data = datas[index];
+                        return ListTile(
+                          title: Text(data.documentNumber ?? ""),
+                          subtitle: Text(data.datetime ?? ""),
+                          trailing: const Icon(Icons.arrow_forward_ios),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const AttendanceDetailPage(),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    );
+                  } else {
+                    return const Center(child: Text('No Data'));
+                  }
+                } else {
+                  return const Center(child: CircularProgressIndicator());
+                }
               },
             ),
             ListView.builder(
@@ -95,7 +114,14 @@ class _AttendanceListPageState extends State<AttendanceListPage> {
                       ),
                     ],
                   ),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AttendanceDetailPage(),
+                      ),
+                    );
+                  },
                 );
               },
             ),
