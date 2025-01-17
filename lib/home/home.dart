@@ -1,17 +1,37 @@
 import 'package:flutter/material.dart';
 // import 'package:hris_skripsi/activity/activity.dart';
 import 'package:hris_skripsi/attendance/attendance_list_page.dart';
+import 'package:hris_skripsi/attendance/attendance_request_page.dart';
 import 'package:hris_skripsi/constant/asset_const.dart';
 import 'package:hris_skripsi/constant/font_const.dart';
 import 'package:hris_skripsi/constant/spacer_const.dart';
 
 import 'package:hris_skripsi/widgets/shadow.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // import '../constant/data_const.dart';
 import '../widgets/button.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    requestPermission();
+    super.initState();
+  }
+
+  void requestPermission() async {
+    await [
+      Permission.location,
+      Permission.camera,
+    ].request();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,12 +156,61 @@ class HomePage extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const AttendanceListPage(),
+                              builder: (context) =>
+                                  const AttendanceRequestPage(),
                             ),
                           );
                         },
                         child: Text(
                           "Hadir",
+                          style: kfWhite14Medium,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            ksVertical20,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: PerfectShadow(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 5,
+                  ),
+                  padding: const EdgeInsets.all(15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ksVertical10,
+                      Row(
+                        children: [
+                          Text(
+                            "List Kehadiran & Approval",
+                            style: kfBlack16Medium,
+                          ),
+                        ],
+                      ),
+                      ksVertical10,
+                      ButtonGradient(
+                        height: 25,
+                        borderRadius: BorderRadius.circular(10),
+                        width: size.width * 0.43,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const AttendanceListPage(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          "Lihat Dokumen",
                           style: kfWhite14Medium,
                         ),
                       ),
