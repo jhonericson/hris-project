@@ -1,24 +1,42 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hris_skripsi/constant/font_const.dart';
+import 'package:hris_skripsi/core/enum.dart';
 import 'package:hris_skripsi/widgets/shadow.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart' as lokasi;
 import '../home/navigation.dart';
 import '../widgets/button.dart';
+import 'controller/attendance_bloc.dart';
 
-class AttendanceRequestPage extends StatefulWidget {
+class AttendanceRequestPage extends StatelessWidget {
   const AttendanceRequestPage({super.key});
 
   @override
-  State<AttendanceRequestPage> createState() => _AttendanceRequestPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => AttendanceBloc(),
+      child: const AttendanceRequestPageView(),
+    );
+  }
 }
 
-class _AttendanceRequestPageState extends State<AttendanceRequestPage> {
+class AttendanceRequestPageView extends StatefulWidget {
+  const AttendanceRequestPageView({super.key});
+
+  @override
+  State<AttendanceRequestPageView> createState() =>
+      _AttendanceRequestPageViewState();
+}
+
+class _AttendanceRequestPageViewState extends State<AttendanceRequestPageView> {
   late final MapController _mapController;
   lokasi.LocationData? _currentLocation;
   final lokasi.Location _locationService = lokasi.Location();
@@ -37,10 +55,10 @@ class _AttendanceRequestPageState extends State<AttendanceRequestPage> {
 
   @override
   void initState() {
-    super.initState();
+    initLocationService();
     _mapController = MapController();
     _description = TextEditingController();
-    initLocationService();
+    super.initState();
   }
 
   @override
@@ -50,35 +68,60 @@ class _AttendanceRequestPageState extends State<AttendanceRequestPage> {
     super.dispose();
   }
 
-  Future<void> getImage(ImageSource source, String note) async {
+  Future<void> getImage({
+    required BuildContext context,
+    required ImageSource source,
+    required String lokasi,
+    required String note,
+  }) async {
     final ImagePicker picker = ImagePicker();
     final XFile? imagePicked = await picker.pickImage(
         source: source,
-        maxHeight: 720,
-        maxWidth: 720,
+        maxHeight: 100,
+        maxWidth: 100,
         requestFullMetadata: true);
     image = File(imagePicked!.path);
     if (image != null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const BottomNavigation(),
-        ),
-      );
-      Fluttertoast.showToast(
-          msg: "Success",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          fontSize: 16.0);
+      final byte = await image!.readAsBytes();
+      final base64Image = base64Encode(byte);
+      if (base64Image.isEmpty) {
+        Fluttertoast.showToast(
+            msg: "Gagal mengambil gambar",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.black,
+            textColor: Colors.white,
+            fontSize: 16.0);
+        return;
+      } else {
+        context.read<AttendanceBloc>().add(UploadAttendance(
+              base64image: base64Image,
+              location: lokasi,
+              notes: note,
+            ));
+      }
+
+      // Navigator.pushReplacement(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => const BottomNavigation(),
+      //   ),
+      // );
+      // Fluttertoast.showToast(
+      //     msg: "Success",
+      //     toastLength: Toast.LENGTH_SHORT,
+      //     gravity: ToastGravity.CENTER,
+      //     timeInSecForIosWeb: 1,
+      //     backgroundColor: Colors.black,
+      //     textColor: Colors.white,
+      //     fontSize: 16.0);
     }
   }
 
   void initLocationService() async {
     await _locationService.changeSettings(
-      accuracy: lokasi.LocationAccuracy.high,
+      accuracy: lokasi.LocationAccuracy.balanced,
       interval: 10000,
     );
 
@@ -94,8 +137,10 @@ class _AttendanceRequestPageState extends State<AttendanceRequestPage> {
         _permission = permission == lokasi.PermissionStatus.granted;
 
         if (_permission) {
+          print("permission granted");
           location = await _locationService.getLocation();
           _currentLocation = location;
+          print("$_currentLocation koko");
           _locationService.onLocationChanged
               .listen((lokasi.LocationData result) async {
             if (mounted) {
@@ -184,8 +229,7 @@ class _AttendanceRequestPageState extends State<AttendanceRequestPage> {
                       TileLayer(
                         urlTemplate:
                             'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        userAgentPackageName:
-                            'dev.fleaflet.flutter_map.example',
+                        userAgentPackageName: 'com.hris.project',
                       ),
                       MarkerLayer(markers: marker),
                     ],
@@ -269,19 +313,72 @@ class _AttendanceRequestPageState extends State<AttendanceRequestPage> {
           ),
         ],
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-        child: ButtonGradient(
-          height: kToolbarHeight,
-          borderRadius: BorderRadius.circular(10),
-          width: double.infinity,
-          onPressed: () {
-            print(_description.text);
-            // getImage(ImageSource.camera, _description.text);
-          },
-          child: Text(
-            "Ambil Gambar",
-            style: kfWhite14Medium,
+      bottomNavigationBar: BlocListener<AttendanceBloc, AttendanceState>(
+        listener: (context, state) {
+          if (state.actionStatus==ActionStatus.loading) {
+            EasyLoading.show(
+              status: "Please Wait...",
+              dismissOnTap: true,
+            );
+          } else if (state.actionStatus == ActionStatus.success) {
+            EasyLoading.showSuccess("success");
+            EasyLoading.dismiss();
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const BottomNavigation(),
+              ),
+            );
+          } else if (state.actionStatus == ActionStatus.failure) {
+            EasyLoading.showError("error");
+            EasyLoading.dismiss();
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+          child: ButtonGradient(
+            height: kToolbarHeight,
+            borderRadius: BorderRadius.circular(10),
+            width: double.infinity,
+            onPressed: () {
+              if (_description.text.isEmpty) {
+                Fluttertoast.showToast(
+                    msg: "Catatan tidak boleh kosong",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.CENTER,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.black,
+                    textColor: Colors.white,
+                    fontSize: 16.0);
+                return;
+              }
+              // else if (currentLatLng.latitude == 0 &&
+              //     currentLatLng.longitude == 0) {
+              //   Fluttertoast.showToast(
+              //       msg: "Lokasi tidak ditemukan",
+              //       toastLength: Toast.LENGTH_SHORT,
+              //       gravity: ToastGravity.CENTER,
+              //       timeInSecForIosWeb: 1,
+              //       backgroundColor: Colors.black,
+              //       textColor: Colors.white,
+              //       fontSize: 16.0);
+              //   return;
+              // }
+              else {
+                print(
+                    "${_description.text}, ${currentLatLng.latitude},${currentLatLng.longitude}");
+                getImage(
+                    context: context,
+                    source: ImageSource.camera,
+                    lokasi:
+                        "${currentLatLng.latitude},${currentLatLng.longitude}",
+                    note: _description.text);
+              }
+            },
+            child: Text(
+              "Ambil Gambar",
+              style: kfWhite14Medium,
+            ),
           ),
         ),
       ),

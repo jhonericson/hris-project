@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 class LeaveListModel {
-  final List<LeaveListResultModel>? result;
+  final List<Result>? result;
 
   LeaveListModel({
     this.result,
@@ -12,12 +12,10 @@ class LeaveListModel {
 
   String toRawJson() => json.encode(toJson());
 
-  factory LeaveListModel.fromJson(Map<String, dynamic> json) =>
-      LeaveListModel(
+  factory LeaveListModel.fromJson(Map<String, dynamic> json) => LeaveListModel(
         result: json["result"] == null
             ? []
-            : List<LeaveListResultModel>.from(json["result"]!
-                .map((x) => LeaveListResultModel.fromJson(x))),
+            : List<Result>.from(json["result"]!.map((x) => Result.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -27,38 +25,36 @@ class LeaveListModel {
       };
 }
 
-class LeaveListResultModel {
+class Result {
   final int? id;
   final String? documentNumber;
   final String? employeeNik;
-  final String? datetime;
-  final String? geolocation;
-  final String? notes;
+  final String? startDate;
+  final String? endDate;
+  final String? employeeName;
   final String? status;
 
-  LeaveListResultModel({
+  Result({
     this.id,
     this.documentNumber,
     this.employeeNik,
-    this.datetime,
-    this.geolocation,
-    this.notes,
+    this.startDate,
+    this.endDate,
+    this.employeeName,
     this.status,
   });
 
-  factory LeaveListResultModel.fromRawJson(String str) =>
-      LeaveListResultModel.fromJson(json.decode(str));
+  factory Result.fromRawJson(String str) => Result.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
-  factory LeaveListResultModel.fromJson(Map<String, dynamic> json) =>
-      LeaveListResultModel(
+  factory Result.fromJson(Map<String, dynamic> json) => Result(
         id: json["Id"],
         documentNumber: json["DocumentNumber"],
         employeeNik: json["EmployeeNik"],
-        datetime: json["Datetime"],
-        geolocation: json["Geolocation"],
-        notes: json["Notes"],
+        startDate: json["StartDate"],
+        endDate: json["EndDate"],
+        employeeName: json["EmployeeName"],
         status: json["Status"],
       );
 
@@ -66,9 +62,9 @@ class LeaveListResultModel {
         "Id": id,
         "DocumentNumber": documentNumber,
         "EmployeeNik": employeeNik,
-        "Datetime": datetime,
-        "Geolocation": geolocation,
-        "Notes": notes,
+        "StartDate": startDate,
+        "EndDate": endDate,
+        "EmployeeName": employeeName,
         "Status": status,
       };
 }

@@ -1,44 +1,88 @@
 part of 'attendance_bloc.dart';
 
-sealed class AttendanceState extends Equatable {
-  const AttendanceState();
+class AttendanceState extends Equatable {
+  final ListStatus listStatus;
+  final ApprovalStatus approvalStatus;
+  final ActionStatus actionStatus;
+  final List<AttendanceListResultModel> attendanceList;
+  final List<AttendanceListResultModel> attendanceApproval;
+  final ResultModel? result;
+
+  const AttendanceState({
+    this.listStatus = ListStatus.initial,
+    this.approvalStatus = ApprovalStatus.initial,
+    this.actionStatus = ActionStatus.initial,
+    this.attendanceList = const <AttendanceListResultModel>[],
+    this.attendanceApproval = const <AttendanceListResultModel>[],
+    this.result,
+  });
+  AttendanceState copyWith({
+    ListStatus? listStatus,
+    ApprovalStatus? approvalStatus,
+    ActionStatus? actionStatus,
+    List<AttendanceListResultModel>? attendanceList,
+    List<AttendanceListResultModel>? attendanceApproval,
+    ResultModel? result,
+  }) {
+    return AttendanceState(
+      listStatus: listStatus ?? this.listStatus,
+      approvalStatus: approvalStatus ?? this.approvalStatus,
+      actionStatus: actionStatus ?? this.actionStatus,
+      attendanceList: attendanceList ?? this.attendanceList,
+      attendanceApproval: attendanceApproval??this.attendanceApproval,
+      result: result ?? this.result,
+    );
+  }
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [
+        listStatus,
+        approvalStatus,
+        actionStatus,
+        attendanceList,
+        attendanceApproval,
+        result,
+      ];
 }
+// sealed class AttendanceState extends Equatable {
+//   const AttendanceState();
 
-final class AttendanceInitial extends AttendanceState {}
+//   @override
+//   List<Object> get props => [];
+// }
 
-final class AttendanceLoading extends AttendanceState {}
+// final class AttendanceInitial extends AttendanceState {}
 
-final class AttendanceSuccess extends AttendanceState {
-  final AttendanceListModel attendanceListModel;
+// final class AttendanceLoading extends AttendanceState {}
 
-  const AttendanceSuccess({required this.attendanceListModel});
-  @override
-  List<Object> get props => [attendanceListModel];
-}
+// final class AttendanceSuccess extends AttendanceState {
+//   final AttendanceListModel attendanceListModel;
 
-final class AttendanceFailure extends AttendanceState {}
+//   const AttendanceSuccess({required this.attendanceListModel});
+//   @override
+//   List<Object> get props => [attendanceListModel];
+// }
 
-final class AttendanceApprovalInitial extends AttendanceState {}
+// final class AttendanceFailure extends AttendanceState {}
 
-final class AttendanceApprovalLoading extends AttendanceState {}
+// final class AttendanceApprovalInitial extends AttendanceState {}
 
-final class AttendanceApprovalSuccess extends AttendanceState {
-    final AttendanceListModel attendanceListModel;
+// final class AttendanceApprovalLoading extends AttendanceState {}
 
-  const AttendanceApprovalSuccess({required this.attendanceListModel});
-  @override
-  List<Object> get props => [attendanceListModel];
-}
+// final class AttendanceApprovalSuccess extends AttendanceState {
+//     final AttendanceListModel attendanceListModel;
 
-final class AttendanceApprovalFailure extends AttendanceState {}
+//   const AttendanceApprovalSuccess({required this.attendanceListModel});
+//   @override
+//   List<Object> get props => [attendanceListModel];
+// }
 
-class AttendanceActionInitial extends AttendanceState {}
+// final class AttendanceApprovalFailure extends AttendanceState {}
 
-class AttendanceActionLoading extends AttendanceState {}
+// class AttendanceActionInitial extends AttendanceState {}
 
-class AttendanceActionSuccess extends AttendanceState {}
+// class AttendanceActionLoading extends AttendanceState {}
 
-class AttendanceActionFailure extends AttendanceState {}
+// class AttendanceActionSuccess extends AttendanceState {}
+
+// class AttendanceActionFailure extends AttendanceState {}

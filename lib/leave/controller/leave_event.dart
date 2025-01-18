@@ -34,3 +34,11 @@ class RejectLeave extends LeaveEvent {
   @override
   List<Object> get props => [id];
 }
+
+class LoadLeaveDetail extends LeaveEvent {
+  final int id;
+
+  const LoadLeaveDetail({required this.id});
+  @override
+  List<Object> get props => [id];
+}

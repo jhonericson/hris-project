@@ -236,6 +236,7 @@ class _LoginPageState extends State<LoginPage> {
                                   builder: (context) =>
                                       const BottomNavigation()));
                         } else if (state is LoginFailure) {
+                          EasyLoading.showError("error");
                           EasyLoading.dismiss();
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(

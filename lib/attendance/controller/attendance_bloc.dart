@@ -4,24 +4,30 @@ import 'package:equatable/equatable.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../config.dart';
+import '../../core/action_body.dart';
+import '../../core/enum.dart';
+import '../../core/result_model.dart';
 import '../../login/models/login_model.dart';
+import '../models/attachment_body.dart';
 import '../models/attendance_list_model.dart';
 part 'attendance_event.dart';
 part 'attendance_state.dart';
 
 class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
-  AttendanceBloc() : super(AttendanceInitial()) {
+  AttendanceBloc() : super(AttendanceState()) {
     on<LoadAttendance>(_onLoadAttendance);
     on<LoadAttendanceApproval>(_onLoadAttendanceApproval);
+    on<LoadAttendanceDetail>(_onLoadAttendanceDetail);
     on<ApproveAttendance>(_onApproveAttendance);
     on<RejectAttendance>(_onRejectAttendance);
+    on<UploadAttendance>(_onUploadAttendance);
   }
 
   void _onLoadAttendance(
     LoadAttendance event,
     Emitter<AttendanceState> emit,
   ) async {
-    emit(AttendanceLoading());
+    emit(state.copyWith(listStatus: ListStatus.loading));
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final dataLogin = prefs.getString("login");
@@ -34,16 +40,15 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
       print(
           "${response.headers},${response.statusCode},${response.body} , ${user.result?.nik} xxx");
       if (response.statusCode == 200) {
-        emit(
-          AttendanceSuccess(
-            attendanceListModel: AttendanceListModel.fromJson(data),
-          ),
-        );
+        emit(state.copyWith(
+          listStatus: ListStatus.success,
+          attendanceList: AttendanceListModel.fromJson(data).result,
+        ));
       } else {
-        emit(AttendanceFailure());
+        emit(state.copyWith(listStatus: ListStatus.failure));
       }
     } catch (e) {
-      emit(AttendanceFailure());
+      emit(state.copyWith(listStatus: ListStatus.failure));
     }
   }
 
@@ -51,7 +56,7 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
     LoadAttendanceApproval event,
     Emitter<AttendanceState> emit,
   ) async {
-    emit(AttendanceApprovalLoading());
+    emit(state.copyWith(approvalStatus: ApprovalStatus.loading));
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final dataLogin = prefs.getString("login");
@@ -64,16 +69,15 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
       print(
           "${response.headers},${response.statusCode},${response.body} , ${user.result?.nik} xxx");
       if (response.statusCode == 200) {
-        emit(
-          AttendanceApprovalSuccess(
-            attendanceListModel: AttendanceListModel.fromJson(data),
-          ),
-        );
+        emit(state.copyWith(
+          approvalStatus: ApprovalStatus.success,
+          attendanceApproval: AttendanceListModel.fromJson(data).result,
+        ));
       } else {
-        emit(AttendanceApprovalFailure());
+        emit(state.copyWith(approvalStatus: ApprovalStatus.failure));
       }
     } catch (e) {
-      emit(AttendanceApprovalFailure());
+      emit(state.copyWith(approvalStatus: ApprovalStatus.failure));
     }
   }
 
@@ -81,25 +85,120 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
     ApproveAttendance event,
     Emitter<AttendanceState> emit,
   ) async {
-    emit(AttendanceActionLoading());
+    print("start");
+    emit(state.copyWith(actionStatus: ActionStatus.loading));
     try {
-      // Do something
-      emit(AttendanceActionSuccess());
+      print("starting");
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final dataLogin = prefs.getString("login");
+      final user = LoginModel.fromJson(jsonDecode(dataLogin!));
+      print("startingxxxxx");
+      final response = await http.patch(
+        headers: {"Nik": "${user.result?.nik}"},
+        Uri.parse('$apiUrl/hris/v1/attendance'),
+        body: event.body.toJson(),
+      );
+      print("startingyyyyyy");
+      // final Map<String, dynamic> data = jsonDecode(response.body);
+      print(
+          "${response.headers},${response.statusCode},${response.body} , ${user.result?.nik} xxx");
+      if (response.statusCode == 200) {
+        emit(state.copyWith(actionStatus: ActionStatus.success));
+      } else {
+        emit(state.copyWith(actionStatus: ActionStatus.failure));
+      }
     } catch (e) {
-      emit(AttendanceActionFailure());
+      emit(state.copyWith(actionStatus: ActionStatus.failure));
     }
   }
 
-  _onRejectAttendance(
+  void _onRejectAttendance(
     RejectAttendance event,
     Emitter<AttendanceState> emit,
   ) async {
-    emit(AttendanceActionLoading());
+    emit(state.copyWith(actionStatus: ActionStatus.loading));
     try {
-      // Do something
-      emit(AttendanceActionSuccess());
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final dataLogin = prefs.getString("login");
+      final user = LoginModel.fromJson(jsonDecode(dataLogin!));
+      final response = await http.patch(
+        headers: {"Nik": "${user.result?.nik}"},
+        Uri.parse('$apiUrl/hris/v1/attendance'),
+        body: event.body.toJson(),
+      );
+      // final Map<String, dynamic> data = jsonDecode(response.body);
+      print(
+          "${response.headers},${response.statusCode},${response.body} , ${user.result?.nik} xxx");
+      if (response.statusCode == 200) {
+        emit(state.copyWith(actionStatus: ActionStatus.success));
+      } else {
+        emit(state.copyWith(actionStatus: ActionStatus.failure));
+      }
     } catch (e) {
-      emit(AttendanceActionFailure());
+      emit(state.copyWith(actionStatus: ActionStatus.failure));
+    }
+  }
+
+  void _onLoadAttendanceDetail(
+    LoadAttendanceDetail event,
+    Emitter<AttendanceState> emit,
+  ) async {
+    emit(state.copyWith(actionStatus: ActionStatus.loading));
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final dataLogin = prefs.getString("login");
+      final user = LoginModel.fromJson(jsonDecode(dataLogin!));
+      final response = await http.patch(
+        headers: {
+          "Nik": "${user.result?.nik}",
+        },
+        Uri.parse('$apiUrl/hris/v1/attendance/u1/${event.id}'),
+      );
+      // final Map<String, dynamic> data = jsonDecode(response.body);
+      print(
+          "${response.headers},${response.statusCode},${response.body} , ${user.result?.nik} xxx");
+      if (response.statusCode == 200) {
+        emit(state.copyWith(actionStatus: ActionStatus.success));
+      } else {
+        emit(state.copyWith(actionStatus: ActionStatus.failure));
+      }
+    } catch (e) {
+      emit(state.copyWith(actionStatus: ActionStatus.failure));
+    }
+  }
+
+  void _onUploadAttendance(
+    UploadAttendance event,
+    Emitter<AttendanceState> emit,
+  ) async {
+    print("start");
+    emit(state.copyWith(actionStatus: ActionStatus.loading));
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final dataLogin = prefs.getString("login");
+      final user = LoginModel.fromJson(jsonDecode(dataLogin!));
+      print("proses");
+      final response = await http.post(
+        headers: {
+          "Nik": "${user.result?.nik}",
+        },
+        Uri.parse('$apiUrl/hris/v1/attendance'),
+        body: AttendanceBody(
+          attachment: event.base64image,
+          geolocation: event.location,
+          notes: event.notes,
+        ).toJson(),
+      );
+      // final Map<String, dynamic> data = jsonDecode(response.body);
+      print(
+          "${response.headers},${response.statusCode},${response.body} , ${user.result?.nik} joko");
+      if (response.statusCode == 200) {
+        emit(state.copyWith(actionStatus: ActionStatus.success));
+      } else {
+        emit(state.copyWith(actionStatus: ActionStatus.failure));
+      }
+    } catch (e) {
+      emit(state.copyWith(actionStatus: ActionStatus.loading));
     }
   }
 }

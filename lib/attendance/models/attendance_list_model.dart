@@ -30,6 +30,7 @@ class AttendanceListModel {
 class AttendanceListResultModel {
   final int? id;
   final String? documentNumber;
+  final String? employeeName;
   final String? employeeNik;
   final String? datetime;
   final String? geolocation;
@@ -39,6 +40,7 @@ class AttendanceListResultModel {
   AttendanceListResultModel({
     this.id,
     this.documentNumber,
+    this.employeeName,
     this.employeeNik,
     this.datetime,
     this.geolocation,
@@ -55,6 +57,7 @@ class AttendanceListResultModel {
       AttendanceListResultModel(
         id: json["Id"],
         documentNumber: json["DocumentNumber"],
+        employeeName: json["EmployeeName"],
         employeeNik: json["EmployeeNik"],
         datetime: json["Datetime"],
         geolocation: json["Geolocation"],
@@ -65,6 +68,7 @@ class AttendanceListResultModel {
   Map<String, dynamic> toJson() => {
         "Id": id,
         "DocumentNumber": documentNumber,
+        "EmployeeName": employeeName,
         "EmployeeNik": employeeNik,
         "Datetime": datetime,
         "Geolocation": geolocation,
