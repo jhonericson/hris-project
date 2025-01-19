@@ -42,12 +42,12 @@ class LeaveListPageView extends StatelessWidget {
             BlocBuilder<LeaveBloc, LeaveState>(
               builder: (context, state) {
                 if (state is LeaveSuccess) {
-                  final datas = state.leaveListModel.result;
-                  if (state.leaveListModel.result!.isNotEmpty) {
+                  final datas = state.leaveListModel.result ?? [];
+                  if (datas.isNotEmpty) {
                     return ListView.separated(
                       separatorBuilder: (context, index) => const Divider(),
                       physics: const AlwaysScrollableScrollPhysics(),
-                      itemCount: datas!.length,
+                      itemCount: datas.length,
                       itemBuilder: (context, index) {
                         final data = datas[index];
                         return ListTile(
@@ -76,14 +76,14 @@ class LeaveListPageView extends StatelessWidget {
             BlocBuilder<LeaveBloc, LeaveState>(
               builder: (context, state) {
                 if (state is LeaveApprovalSuccess) {
-                  final datas = state.leaveListModel.result;
-                  if (state.leaveListModel.result!.isNotEmpty) {
+                  final datas = state.leaveListModel.result ?? [];
+                  if (datas.isNotEmpty) {
                     return ListView.separated(
                       separatorBuilder: (context, index) => const Divider(),
                       physics: const AlwaysScrollableScrollPhysics(),
                       itemCount: 10,
                       itemBuilder: (context, index) {
-                        final data = datas![index];
+                        final data = datas[index];
                         return ListTile(
                           title: Text(data.documentNumber ?? ""),
                           subtitle: Column(

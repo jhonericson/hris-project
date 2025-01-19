@@ -6,6 +6,7 @@ class AttendanceState extends Equatable {
   final ActionStatus actionStatus;
   final List<AttendanceListResultModel> attendanceList;
   final List<AttendanceListResultModel> attendanceApproval;
+  final AttendanceDetailModel? attendanceDetailModel;
   final ResultModel? result;
 
   const AttendanceState({
@@ -14,6 +15,7 @@ class AttendanceState extends Equatable {
     this.actionStatus = ActionStatus.initial,
     this.attendanceList = const <AttendanceListResultModel>[],
     this.attendanceApproval = const <AttendanceListResultModel>[],
+    this.attendanceDetailModel,
     this.result,
   });
   AttendanceState copyWith({
@@ -22,6 +24,7 @@ class AttendanceState extends Equatable {
     ActionStatus? actionStatus,
     List<AttendanceListResultModel>? attendanceList,
     List<AttendanceListResultModel>? attendanceApproval,
+    AttendanceDetailModel? attendanceDetailModel,
     ResultModel? result,
   }) {
     return AttendanceState(
@@ -29,7 +32,8 @@ class AttendanceState extends Equatable {
       approvalStatus: approvalStatus ?? this.approvalStatus,
       actionStatus: actionStatus ?? this.actionStatus,
       attendanceList: attendanceList ?? this.attendanceList,
-      attendanceApproval: attendanceApproval??this.attendanceApproval,
+      attendanceApproval: attendanceApproval ?? this.attendanceApproval,
+      attendanceDetailModel: attendanceDetailModel??this.attendanceDetailModel,
       result: result ?? this.result,
     );
   }
@@ -41,6 +45,7 @@ class AttendanceState extends Equatable {
         actionStatus,
         attendanceList,
         attendanceApproval,
+        attendanceDetailModel,
         result,
       ];
 }

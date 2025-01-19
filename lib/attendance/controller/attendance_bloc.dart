@@ -4,11 +4,11 @@ import 'package:equatable/equatable.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../config.dart';
-import '../../core/action_body.dart';
 import '../../core/enum.dart';
 import '../../core/result_model.dart';
 import '../../login/models/login_model.dart';
 import '../models/attachment_body.dart';
+import '../models/attendance_detail_model.dart';
 import '../models/attendance_list_model.dart';
 part 'attendance_event.dart';
 part 'attendance_state.dart';
@@ -96,10 +96,14 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
       final response = await http.patch(
         headers: {"Nik": "${user.result?.nik}"},
         Uri.parse('$apiUrl/hris/v1/attendance'),
-        body: event.body.toJson(),
+        body: {
+          "id": event.id.toString(),
+          "status": event.status,
+        },
       );
       print("startingyyyyyy");
-      // final Map<String, dynamic> data = jsonDecode(response.body);
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      print(data);
       print(
           "${response.headers},${response.statusCode},${response.body} , ${user.result?.nik} xxx");
       if (response.statusCode == 200) {
@@ -124,7 +128,10 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
       final response = await http.patch(
         headers: {"Nik": "${user.result?.nik}"},
         Uri.parse('$apiUrl/hris/v1/attendance'),
-        body: event.body.toJson(),
+        body: {
+          "id": event.id.toString(),
+          "status": event.status,
+        },
       );
       // final Map<String, dynamic> data = jsonDecode(response.body);
       print(
@@ -143,27 +150,30 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
     LoadAttendanceDetail event,
     Emitter<AttendanceState> emit,
   ) async {
-    emit(state.copyWith(actionStatus: ActionStatus.loading));
+    emit(state.copyWith(listStatus: ListStatus.loading));
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final dataLogin = prefs.getString("login");
       final user = LoginModel.fromJson(jsonDecode(dataLogin!));
-      final response = await http.patch(
+      final response = await http.get(
         headers: {
           "Nik": "${user.result?.nik}",
         },
-        Uri.parse('$apiUrl/hris/v1/attendance/u1/${event.id}'),
+        Uri.parse('$apiUrl/hris/v1/attendance/${event.id}'),
       );
-      // final Map<String, dynamic> data = jsonDecode(response.body);
+      final Map<String, dynamic> data = jsonDecode(response.body);
       print(
           "${response.headers},${response.statusCode},${response.body} , ${user.result?.nik} xxx");
       if (response.statusCode == 200) {
-        emit(state.copyWith(actionStatus: ActionStatus.success));
+        emit(state.copyWith(
+          listStatus: ListStatus.success,
+          attendanceDetailModel: AttendanceDetailModel.fromJson(data),
+        ));
       } else {
-        emit(state.copyWith(actionStatus: ActionStatus.failure));
+        emit(state.copyWith(listStatus: ListStatus.failure));
       }
     } catch (e) {
-      emit(state.copyWith(actionStatus: ActionStatus.failure));
+      emit(state.copyWith(listStatus: ListStatus.failure));
     }
   }
 

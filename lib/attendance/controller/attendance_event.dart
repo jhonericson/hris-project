@@ -11,28 +11,34 @@ class LoadAttendance extends AttendanceEvent {}
 
 class LoadAttendanceApproval extends AttendanceEvent {}
 
-class RejectAttendanceDetail extends AttendanceEvent {
-  final int id;
-
-  const RejectAttendanceDetail({required this.id});
-  @override
-  List<Object> get props => [id];
-}
-
 class ApproveAttendance extends AttendanceEvent {
-  final ActionBody body;
+  final int id;
+  final String status;
 
-  const ApproveAttendance({required this.body});
+  const ApproveAttendance({
+    required this.id,
+    required this.status,
+  });
   @override
-  List<Object> get props => [body];
+  List<Object> get props => [
+        id,
+        status,
+      ];
 }
 
 class RejectAttendance extends AttendanceEvent {
-    final ActionBody body;
+  final int id;
+  final String status;
 
-  const RejectAttendance({required this.body});
+  const RejectAttendance({
+    required this.id,
+    required this.status,
+  });
   @override
-  List<Object> get props => [body];
+  List<Object> get props => [
+        id,
+        status,
+      ];
 }
 
 class LoadAttendanceDetail extends AttendanceEvent {

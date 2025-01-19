@@ -1,30 +1,24 @@
-import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hris_skripsi/attendance/attendance_detail_page.dart';
 import 'package:hris_skripsi/core/enum.dart';
-import '../core/action_body.dart';
 import 'controller/attendance_bloc.dart';
-
-// class AttendanceListPage extends StatelessWidget {
-//   const AttendanceListPage({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return BlocProvider(
-//       create: (context) => AttendanceBloc()
-//         ..add(LoadAttendance())
-//         ..add(
-//           LoadAttendanceApproval(),
-//         ),
-//       child: const AttendanceListPageView(),
-//     );
-//   }
-// }
 
 class AttendanceListPage extends StatelessWidget {
   const AttendanceListPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => AttendanceBloc(),
+      child: const AttendanceListPageView(),
+    );
+  }
+}
+
+class AttendanceListPageView extends StatelessWidget {
+  const AttendanceListPageView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -39,12 +33,31 @@ class AttendanceListPage extends StatelessWidget {
             Tab(text: 'Approval'),
           ]),
         ),
-        body: TabBarView(
-          physics: const NeverScrollableScrollPhysics(),
-          children: [
-            AttendanceListTab(),
-            AttendanceApprovalTab(),
-          ],
+        body: BlocListener<AttendanceBloc, AttendanceState>(
+          listener: (context, state) {
+            if (state.actionStatus == ActionStatus.loading) {
+              EasyLoading.show(
+                status: "Please Wait...",
+                dismissOnTap: true,
+              );
+              EasyLoading.dismiss();
+              print("joko");
+            } else if (state.actionStatus == ActionStatus.success) {
+              EasyLoading.showSuccess("Success");
+              EasyLoading.dismiss();
+              context.read<AttendanceBloc>().add(LoadAttendanceApproval());
+            } else if (state.actionStatus == ActionStatus.failure) {
+              EasyLoading.showError("Failed");
+              EasyLoading.dismiss();
+            }
+          },
+          child: TabBarView(
+            physics: const NeverScrollableScrollPhysics(),
+            children: [
+              AttendanceListTab(),
+              AttendanceApprovalTab(),
+            ],
+          ),
         ),
       ),
     );
@@ -70,24 +83,7 @@ class AttendanceApprovalTabView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AttendanceBloc, AttendanceState>(
-      listener: (context, state) {
-        if (state.actionStatus == ActionStatus.loading) {
-          EasyLoading.show(
-            status: "Please Wait...",
-            dismissOnTap: true,
-          );
-          EasyLoading.dismiss();
-          print("joko");
-        } else if (state.actionStatus == ActionStatus.success) {
-          EasyLoading.showSuccess("Success");
-          EasyLoading.dismiss();
-          context.read<AttendanceBloc>().add(LoadAttendanceApproval());
-        } else if (state.actionStatus == ActionStatus.failure) {
-          EasyLoading.showError("Failed");
-          EasyLoading.dismiss();
-        }
-      },
+    return BlocBuilder<AttendanceBloc, AttendanceState>(
       builder: (context, state) {
         if (state.approvalStatus == ApprovalStatus.success) {
           final datas = state.attendanceApproval;
@@ -103,7 +99,7 @@ class AttendanceApprovalTabView extends StatelessWidget {
                 child: ListView.separated(
                   separatorBuilder: (context, index) => const Divider(),
                   physics: const AlwaysScrollableScrollPhysics(),
-                  itemCount: 10,
+                  itemCount: datas.length,
                   itemBuilder: (context, index) {
                     final data = datas[index];
                     return ListTile(
@@ -115,64 +111,24 @@ class AttendanceApprovalTabView extends StatelessWidget {
                           Text(data.datetime ?? ""),
                         ],
                       ),
-                      trailing: Wrap(
-                        // mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.check),
-                            onPressed: () {
-                              showOkCancelAlertDialog(
-                                context: context,
-                                title: 'Approve',
-                                message:
-                                    'Are you sure to approve this request?',
-                              ).then(
-                                (value) {
-                                  if (value == OkCancelResult.ok) {
-                                    context.read<AttendanceBloc>().add(
-                                          ApproveAttendance(
-                                            body: ActionBody(
-                                              id: data.id!,
-                                              status: "approve",
-                                            ),
-                                          ),
-                                        );
-                                  }
-                                },
-                              );
-                            },
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.close),
-                            onPressed: () {
-                              showOkCancelAlertDialog(
-                                context: context,
-                                title: 'Reject',
-                                message: 'Are you sure to reject this request?',
-                              ).then(
-                                (value) {
-                                  if (value == OkCancelResult.ok) {
-                                    context.read<AttendanceBloc>().add(
-                                          RejectAttendance(
-                                            body: ActionBody(
-                                              id: data.id!,
-                                              status: "reject",
-                                            ),
-                                          ),
-                                        );
-                                  }
-                                },
-                              );
-                            },
-                          ),
-                        ],
-                      ),
+                      trailing: Icon(Icons.arrow_forward),
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const AttendanceDetailPage(),
+                            builder: (context) => AttendanceDetailPage(
+                              id: data.id!,
+                              source: Source.approval.name,
+                            ),
                           ),
+                        ).then(
+                          (value) {
+                            if (value == "ok") {
+                              context
+                                  .read<AttendanceBloc>()
+                                  .add(LoadAttendanceApproval());
+                            }
+                          },
                         );
                       },
                     );
@@ -237,7 +193,10 @@ class AttendanceListTabView extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const AttendanceDetailPage(),
+                          builder: (context) => AttendanceDetailPage(
+                            id: data.id!,
+                            source: Source.detail.name,
+                          ),
                         ),
                       );
                     },
