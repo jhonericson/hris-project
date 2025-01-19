@@ -1,26 +1,26 @@
-import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hris_skripsi/core/enum.dart';
 import 'package:hris_skripsi/leave/leave_detail_page.dart';
 import 'package:hris_skripsi/leave/leave_request_page.dart';
 import 'controller/leave_bloc.dart';
 
+// class LeaveListPage extends StatelessWidget {
+//   const LeaveListPage({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return BlocProvider(
+//       create: (context) => LeaveBloc()
+//         ..add(LoadLeave())
+//         ..add(LoadLeaveApproval()),
+//       child: LeaveListPageView(),
+//     );
+//   }
+// }
+
 class LeaveListPage extends StatelessWidget {
   const LeaveListPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => LeaveBloc()
-        ..add(LoadLeave())
-        ..add(LoadLeaveApproval()),
-      child: LeaveListPageView(),
-    );
-  }
-}
-
-class LeaveListPageView extends StatelessWidget {
-  const LeaveListPageView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -39,132 +39,176 @@ class LeaveListPageView extends StatelessWidget {
         body: TabBarView(
           physics: const NeverScrollableScrollPhysics(),
           children: [
-            BlocBuilder<LeaveBloc, LeaveState>(
-              builder: (context, state) {
-                if (state is LeaveSuccess) {
-                  final datas = state.leaveListModel.result ?? [];
-                  if (datas.isNotEmpty) {
-                    return ListView.separated(
-                      separatorBuilder: (context, index) => const Divider(),
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      itemCount: datas.length,
-                      itemBuilder: (context, index) {
-                        final data = datas[index];
-                        return ListTile(
-                          title: Text(data.documentNumber ?? ""),
-                          subtitle: Text("${data.startDate} - ${data.endDate}"),
-                          trailing: const Icon(Icons.arrow_forward_ios),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => LeaveDetailPage(),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    );
-                  } else {
-                    return const Center(child: Text('No Data'));
-                  }
-                } else {
-                  return const Center(child: CircularProgressIndicator());
-                }
-              },
-            ),
-            BlocBuilder<LeaveBloc, LeaveState>(
-              builder: (context, state) {
-                if (state is LeaveApprovalSuccess) {
-                  final datas = state.leaveListModel.result ?? [];
-                  if (datas.isNotEmpty) {
-                    return ListView.separated(
-                      separatorBuilder: (context, index) => const Divider(),
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      itemCount: 10,
-                      itemBuilder: (context, index) {
-                        final data = datas[index];
-                        return ListTile(
-                          title: Text(data.documentNumber ?? ""),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(data.employeeName ?? ""),
-                              Text("${data.startDate} - ${data.endDate}"),
-                            ],
-                          ),
-                          trailing: Wrap(
-                            // mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.check),
-                                onPressed: () {
-                                  showOkCancelAlertDialog(
-                                    context: context,
-                                    title: 'Approve',
-                                    message:
-                                        'Are you sure to approve this request?',
-                                  ).then(
-                                    (value) {
-                                      if (value == OkCancelResult.ok) {
-                                        // do something
-                                      }
-                                    },
-                                  );
-                                },
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.close),
-                                onPressed: () {
-                                  showOkCancelAlertDialog(
-                                    context: context,
-                                    title: 'Reject',
-                                    message:
-                                        'Are you sure to reject this request?',
-                                  ).then(
-                                    (value) {
-                                      if (value == OkCancelResult.ok) {
-                                        // do something
-                                      }
-                                    },
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => LeaveDetailPage(),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    );
-                  } else {
-                    return const Center(child: Text('No Data'));
-                  }
-                } else if (state is LeaveApprovalFailure) {
-                  return const Center(child: Text("No Access"));
-                } else {
-                  return const Center(child: CircularProgressIndicator());
-                }
-              },
-            ),
+            LeaveListTab(),
+            LeaveApprovalTab(),
           ],
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const LeaveRequestPage()));
+              context,
+              MaterialPageRoute(
+                builder: (context) => const LeaveRequestPage(),
+              ),
+            ).then((value) {
+              if (value == "ok") {
+                context.read<LeaveBloc>().add(LoadLeave());
+              }
+            });
           },
           child: const Icon(Icons.add),
         ),
       ),
+    );
+  }
+}
+
+class LeaveApprovalTab extends StatelessWidget {
+  const LeaveApprovalTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => LeaveBloc()..add(LoadLeaveApproval()),
+      child: LeaveApprovalTabView(),
+    );
+  }
+}
+
+class LeaveApprovalTabView extends StatelessWidget {
+  const LeaveApprovalTabView({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<LeaveBloc, LeaveState>(
+      builder: (context, state) {
+        if (state.approvalStatus == ApprovalStatus.success) {
+          final datas = state.leaveApproval;
+          if (datas.isNotEmpty) {
+            return RefreshIndicator(
+              onRefresh: () async {
+                context.read<LeaveBloc>().add(LoadLeaveApproval());
+              },
+              child: ListView.separated(
+                separatorBuilder: (context, index) => const Divider(),
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemCount: datas.length,
+                itemBuilder: (context, index) {
+                  final data = datas[index];
+                  return ListTile(
+                    title: Text(data.documentNumber ?? ""),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(data.employeeName ?? ""),
+                        Text("${data.startDate} - ${data.endDate}"),
+                      ],
+                    ),
+                    trailing: Icon(Icons.arrow_forward_ios),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LeaveDetailPage(
+                            id: data.id!,
+                            source: Source.approval.name,
+                          ),
+                        ),
+                      ).then((value) {
+                        if (value == "ok") {
+                          context.read<LeaveBloc>().add(LoadLeaveApproval());
+                        }
+                      });
+                    },
+                  );
+                },
+              ),
+            );
+          } else {
+            return const Center(child: Text('No Data'));
+          }
+        } else if (state.approvalStatus == ApprovalStatus.loading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state.approvalStatus == ApprovalStatus.failure) {
+          return const Center(child: Text('Error'));
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
+    );
+  }
+}
+
+class LeaveListTab extends StatelessWidget {
+  const LeaveListTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => LeaveBloc()..add(LoadLeave()),
+      child: LeaveListTabView(),
+    );
+  }
+}
+
+class LeaveListTabView extends StatelessWidget {
+  const LeaveListTabView({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<LeaveBloc, LeaveState>(
+      builder: (context, state) {
+        if (state.listStatus == ListStatus.success) {
+          final datas = state.leaveList;
+          if (datas.isNotEmpty) {
+            return RefreshIndicator(
+              onRefresh: () async {
+                context.read<LeaveBloc>().add(LoadLeave());
+              },
+              child: ListView.separated(
+                separatorBuilder: (context, index) => const Divider(),
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemCount: datas.length,
+                itemBuilder: (context, index) {
+                  final data = datas[index];
+                  return ListTile(
+                    title: Text(data.documentNumber ?? ""),
+                    subtitle: Text("${data.startDate} - ${data.endDate}"),
+                    trailing: const Icon(Icons.arrow_forward_ios),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LeaveDetailPage(
+                            id: data.id!,
+                            source: Source.detail.name,
+                          ),
+                        ),
+                      ).then((value) {
+                        if (value == "ok") {
+                          context.read<LeaveBloc>().add(LoadLeave());
+                        }
+                      });
+                    },
+                  );
+                },
+              ),
+            );
+          } else {
+            return const Center(child: Text('No Data'));
+          }
+        } else if (state.listStatus == ListStatus.loading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state.listStatus == ListStatus.failure) {
+          return const Center(child: Text('Error'));
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
     );
   }
 }

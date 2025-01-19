@@ -111,7 +111,7 @@ class AttendanceApprovalTabView extends StatelessWidget {
                           Text(data.datetime ?? ""),
                         ],
                       ),
-                      trailing: Icon(Icons.arrow_forward),
+                      trailing: Icon(Icons.arrow_forward_ios),
                       onTap: () {
                         Navigator.push(
                           context,

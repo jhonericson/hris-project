@@ -1,20 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hris_skripsi/constant/spacer_const.dart';
-
+import 'package:hris_skripsi/core/enum.dart';
 import '../constant/font_const.dart';
-import '../home/navigation.dart';
 import '../widgets/button.dart';
+import 'controller/leave_bloc.dart';
 
-class LeaveRequestPage extends StatefulWidget {
+class LeaveRequestPage extends StatelessWidget {
   const LeaveRequestPage({super.key});
 
   @override
-  State<LeaveRequestPage> createState() => _LeaveRequestPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => LeaveBloc(),
+      child: LeaveRequestPageView(),
+    );
+  }
 }
 
-class _LeaveRequestPageState extends State<LeaveRequestPage> {
-  final List<String> cutiOptions = ['Sakit', 'Cuti Tahunan', 'Cuti Melahirkan'];
+class LeaveRequestPageView extends StatefulWidget {
+  const LeaveRequestPageView({super.key});
+
+  @override
+  State<LeaveRequestPageView> createState() => _LeaveRequestPageViewState();
+}
+
+class _LeaveRequestPageViewState extends State<LeaveRequestPageView> {
+  final List<String> cutiOptions = [
+    'Ijin',
+    'Cuti',
+  ];
   String? cuti;
   final TextEditingController dateController = TextEditingController();
   final TextEditingController noteController = TextEditingController();
@@ -66,8 +83,9 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                 );
 
                 if (selectedDate != null) {
-                  dateController.text =
-                      '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}';
+                dateController.text =
+                      '${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}';
+
                 }
               },
             ),
@@ -77,7 +95,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
               onTapOutside: (event) {
                 FocusScope.of(context).unfocus();
               },
-              keyboardType: TextInputType.emailAddress,
+              keyboardType: TextInputType.text,
 
               // onChanged: (value) {
               //   if (value.isNotEmpty) {
@@ -86,7 +104,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
               // },
               validator: (value) {
                 if (value!.isEmpty) {
-                  return "Email Kosong";
+                  return "Note Kosong";
                 }
                 return null;
               },
@@ -127,38 +145,49 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
           ],
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-        child: ButtonGradient(
-          height: kToolbarHeight,
-          borderRadius: BorderRadius.circular(10),
-          width: double.infinity,
-          onPressed: () {
-            if (cuti == null &&
-                dateController.text.isEmpty &&
-                noteController.text.isEmpty) {
-              Fluttertoast.showToast(msg: 'Lengkapi data terlebih dahulu');
-              return;
-            } else {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const BottomNavigation(),
-                ),
-              );
-              Fluttertoast.showToast(
-                  msg: "Success",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.CENTER,
-                  timeInSecForIosWeb: 1,
-                  backgroundColor: Colors.black,
-                  textColor: Colors.white,
-                  fontSize: 16.0);
-            }
-          },
-          child: Text(
-            "Ajukan Cuti",
-            style: kfWhite14Medium,
+      bottomNavigationBar: BlocListener<LeaveBloc, LeaveState>(
+        listener: (context, state) {
+          if (state.actionStatus == ActionStatus.loading) {
+            EasyLoading.show(
+              status: "Please Wait...",
+              dismissOnTap: true,
+            );
+          } else if (state.actionStatus == ActionStatus.success) {
+            EasyLoading.showSuccess("success");
+            EasyLoading.dismiss();
+            Navigator.pop(context, "ok");
+          } else if (state.actionStatus == ActionStatus.failure) {
+            EasyLoading.showError("error");
+            EasyLoading.dismiss();
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+          child: ButtonGradient(
+            height: kToolbarHeight,
+            borderRadius: BorderRadius.circular(10),
+            width: double.infinity,
+            onPressed: () {
+              if (cuti == null &&
+                  dateController.text.isEmpty &&
+                  noteController.text.isEmpty) {
+                Fluttertoast.showToast(msg: 'Lengkapi data terlebih dahulu');
+                return;
+              } else {
+                context.read<LeaveBloc>().add(
+                      SubmitLeave(
+                        startDate: dateController.text,
+                        endDate: dateController.text,
+                        leaveType: cuti?.toLowerCase() ?? "-",
+                        notes: noteController.text,
+                      ),
+                    );
+              }
+            },
+            child: Text(
+              "Ajukan Cuti",
+              style: kfWhite14Medium,
+            ),
           ),
         ),
       ),

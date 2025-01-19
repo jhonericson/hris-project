@@ -9,7 +9,6 @@ import 'package:hris_skripsi/constant/font_const.dart';
 import 'package:hris_skripsi/core/enum.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
-import '../home/navigation.dart';
 import '../widgets/button.dart';
 import 'location_bloc/location_bloc.dart';
 import 'controller/attendance_bloc.dart';
@@ -250,12 +249,7 @@ class _AttendanceRequestPageViewState extends State<AttendanceRequestPageView> {
           } else if (state.actionStatus == ActionStatus.success) {
             EasyLoading.showSuccess("success");
             EasyLoading.dismiss();
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const BottomNavigation(),
-              ),
-            );
+            Navigator.pop(context, "ok");
           } else if (state.actionStatus == ActionStatus.failure) {
             EasyLoading.showError("error");
             EasyLoading.dismiss();
