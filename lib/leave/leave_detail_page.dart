@@ -2,8 +2,6 @@ import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-
 import '../constant/font_const.dart';
 import '../core/enum.dart';
 import '../widgets/button.dart';
@@ -195,19 +193,10 @@ class LeaveDetailPageView extends StatelessWidget {
                 status: "Please Wait...",
                 dismissOnTap: true,
               );
-              EasyLoading.dismiss();
               print("joko");
             } else if (state.actionStatus == ActionStatus.success) {
               EasyLoading.showSuccess("Success");
               EasyLoading.dismiss();
-              Fluttertoast.showToast(
-                  msg: "Success",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.CENTER,
-                  timeInSecForIosWeb: 1,
-                  backgroundColor: Colors.black,
-                  textColor: Colors.white,
-                  fontSize: 16.0);
               Navigator.pop(context, "ok");
             } else if (state.actionStatus == ActionStatus.failure) {
               EasyLoading.showError("Failed");

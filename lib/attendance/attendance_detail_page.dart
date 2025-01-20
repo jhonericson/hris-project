@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hris_skripsi/constant/spacer_const.dart';
 import 'package:hris_skripsi/core/enum.dart';
 import 'package:latlong2/latlong.dart';
@@ -157,19 +156,10 @@ class AttendanceDetailPageView extends StatelessWidget {
               status: "Please Wait...",
               dismissOnTap: true,
             );
-            EasyLoading.dismiss();
             print("joko");
           } else if (state.actionStatus == ActionStatus.success) {
             EasyLoading.showSuccess("Success");
             EasyLoading.dismiss();
-            Fluttertoast.showToast(
-                msg: "Success",
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.CENTER,
-                timeInSecForIosWeb: 1,
-                backgroundColor: Colors.black,
-                textColor: Colors.white,
-                fontSize: 16.0);
             Navigator.pop(context, "ok");
           } else if (state.actionStatus == ActionStatus.failure) {
             EasyLoading.showError("Failed");
